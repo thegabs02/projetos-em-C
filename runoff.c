@@ -18,7 +18,7 @@ int main (int argc, string argv[])
     if(argc < 3)
     {
         printf("coloque tres candidatos ou mais\n");
-        return  1;
+        return  true
     }
     eleiçao(argc, argv);
     return 0;
