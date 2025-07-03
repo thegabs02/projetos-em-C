@@ -51,13 +51,22 @@ void eleiçao(int num_candidatos, estrutura candidato[])
     {
         for(int o = 0; o < num_candidatos; o++)
         {
-            voto = get_string("Pra quem é o seu %iº voto? ", o + 1);
+            voto = get_string("rep Pra quem é o seu %iº voto? ", o + 1);
+            do
+            {
+                voto = get_string("voto invalido, Pra quem é o seu %iº voto? ", o + 1);
+            }
+            while(strcmp(candidato[o].nome, voto) != 0);
             
             if(eh_candidato(voto, candidato, num_candidatos))
             {
                 total++;
                 pref[i][o] = voto;
                 continue;
+            }
+            else
+            {
+                printf("candidato invalido");
             }
         }
     }
@@ -72,6 +81,10 @@ bool eh_candidato(string voto, estrutura candidato[], int num_candidatos)
         if(strcmp(candidato[i].nome, voto) == 0)
         {
             return true;
+        }
+        else
+        {
+            eleiçao(num_candidatos, candidato);
         }
     }
     return false;
