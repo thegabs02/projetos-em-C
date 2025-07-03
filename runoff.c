@@ -11,10 +11,9 @@ typedef struct
     bool eliminado;
 }estrutura;
 
-void ganhador(estrutura candidato[], int num_candidatos, int total);
+int ganhador(estrutura candidato[], int num_candidatos, int total, int eleitores, string pref[][num_candidatos]);
 void votos_cant(int eleitores, int num_candidatos, estrutura candidato[], string pref[][num_candidatos], int total);
-void eliminado(estrutura candidato[], int num_candidatos, int total);
-bool eh_candidato(string voto, estrutura candidato[], int num_candidatos);
+void eliminado(estrutura candidato[], int num_candidatos, int total, int eleitores, string pref[][num_candidatos]);
 void eleiçao(int num_candidatos, estrutura candidato[]);
 int main (int argc, string argv[])
 {
@@ -40,7 +39,7 @@ int main (int argc, string argv[])
 
 void eleiçao(int num_candidatos, estrutura candidato[])
 {
-    
+
     string voto;
     int total = 0;
     int eleitores = get_int("qual é a quantidade de eleitores? ");
@@ -51,45 +50,37 @@ void eleiçao(int num_candidatos, estrutura candidato[])
     {
         for(int o = 0; o < num_candidatos; o++)
         {
-            voto = get_string("rep Pra quem é o seu %iº voto? ", o + 1);
+            bool valido = false;
             do
             {
-                voto = get_string("voto invalido, Pra quem é o seu %iº voto? ", o + 1);
+                voto = get_string("Pra quem é o seu %iº voto? ", o + 1);
+                for(int j = 0; j < num_candidatos; j++)
+                {
+                    if(strcmp(candidato[j].nome, voto) == 0)
+                    {
+                        valido = true;
+                        pref[i][o] = voto;
+                    }
+                    if(valido)
+                    {
+                        total++;
+                    }
+                }
+                if(!valido)
+                {
+                printf("%s é inválido, repita seu voto\n", voto);
+                break;
+                }
+                
             }
-            while(strcmp(candidato[o].nome, voto) != 0);
-            
-            if(eh_candidato(voto, candidato, num_candidatos))
-            {
-                total++;
-                pref[i][o] = voto;
-                continue;
-            }
-            else
-            {
-                printf("candidato invalido");
-            }
+            while(!valido);
         }
     }
-    
+
     votos_cant(eleitores, num_candidatos, candidato, pref, total);
 
 }
-bool eh_candidato(string voto, estrutura candidato[], int num_candidatos)
-{
-    for(int i = 0; i < num_candidatos; i++)
-    {
-        if(strcmp(candidato[i].nome, voto) == 0)
-        {
-            return true;
-        }
-        else
-        {
-            eleiçao(num_candidatos, candidato);
-        }
-    }
-    return false;
-    return 0;
-}
+
 void votos_cant(int eleitores, int num_candidatos, estrutura candidato[], string pref[][num_candidatos], int total)
 {
     int cont = 0;
@@ -104,9 +95,9 @@ void votos_cant(int eleitores, int num_candidatos, estrutura candidato[], string
         }
     }
     cont++;
-    eliminado(candidato, num_candidatos, total);
+    eliminado(candidato, num_candidatos, total, eleitores, pref);
 }
-void eliminado(estrutura candidato[], int num_candidatos, int total)
+void eliminado(estrutura candidato[], int num_candidatos, int total, int eleitores, string pref[][num_candidatos])
 {
     int menor = candidato[0].votos;
     for(int k = 0; k < num_candidatos; k++)
@@ -114,30 +105,31 @@ void eliminado(estrutura candidato[], int num_candidatos, int total)
         if(menor > candidato[k].votos)
         {
           menor = candidato[k].votos;
-        }       
-        
+        }
+
     }
     for(int h= 0; h < num_candidatos; h++)
     {
         if(menor == candidato[h].votos)
         {
             candidato[h].eliminado = true;
-            printf("%s foi eliminado[a]\n", candidato[h].nome);
         }
-    
+
     }
-    ganhador(candidato, num_candidatos, total);
+    ganhador(candidato, num_candidatos, total, eleitores, pref);
 }
-void ganhador(estrutura candidato[], int num_candidatos, int total)
+int ganhador(estrutura candidato[], int num_candidatos, int total, int eleitores, string pref[][num_candidatos])
 {
     int media = total / 2;
-    
+
     for(int i = 0; i < num_candidatos; i++)
     {
         if(candidato[i].votos >= media)
         {
             printf("candidato %s ganhou", candidato[i].nome);
+            return 0;
         }
+          
     }
-    //repetir eleiçao
+    votos_cant(eleitores, num_candidatos, candidato, pref, total);
 }
