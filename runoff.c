@@ -12,7 +12,6 @@ typedef struct
     bool eliminado;
 }estrutura;
 
-int versos(int num_candidatos, int  eleitores, estrutura candidato[]);
 int ganhador(estrutura candidato[], int num_candidatos, int total, int eleitores, string pref[][num_candidatos]);
 void votos_cant(int eleitores, int num_candidatos, estrutura candidato[], string pref[][num_candidatos], int total);
 void eliminado(estrutura candidato[], int num_candidatos, int total, int eleitores, string pref[][num_candidatos]);
@@ -135,24 +134,8 @@ int ganhador(estrutura candidato[], int num_candidatos, int total, int eleitores
         if(candidato[i].votos1>= media)
         {
             printf("ganhador por preferencia %s\n", candidato[i].nome);
-            versos(num_candidatos, eleitores, candidato);
             return 0;
         }
     }
     votos_cant(eleitores, num_candidatos, candidato, pref, total);
-}
-int versos(int num_candidatos, int  eleitores, estrutura candidato[])
-{
-    string ganhador = candidato[0].nome;
-    int maior = candidato[0].votos2;
-    for(int i = 1; i < num_candidatos; i++)
-    {
-        if(candidato[i].votos2 > maior)
-        {
-            ganhador = candidato[i].nome;
-            maior = candidato[i].votos2;
-        }
-    }
-    printf("ganhador por maioria de votos %s\n", ganhador);
-    return 0;
 }
