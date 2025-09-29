@@ -6,7 +6,7 @@
 int convertor(int cifra, char palavra[]);
 int main (int argc, char *argv[])
 {
-    if(argc > 2 && argc < 2)
+    if(argc != 2)
     {
         printf("digite o numero de casas puladas ao iniciar\n");
     }
@@ -51,6 +51,7 @@ int convertor(int cifra, char palavra[])
         {
             printf("%c", letra);
         }
+        return 0;
     }
     
     
