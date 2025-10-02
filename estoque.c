@@ -49,6 +49,7 @@ void config_menu(estoque *produto, int n)
 int menu(estoque *produto, int n)
 {
     int op;
+    int add = 0 ;
     do{
         
         printf("MENU--------\n");
@@ -56,9 +57,10 @@ int menu(estoque *produto, int n)
         printf("2 - comprar\n");
         printf("3 - adicionar ao estoque\n");
         printf("4 - sair\n");
+        printf("5 - adicionar ao arquivo\n");
         scanf("%i", &op);
     
-        int add = 0 ;
+        
 
         switch(op)
         {
@@ -68,7 +70,7 @@ int menu(estoque *produto, int n)
                     printf("%iº produto == %s\n", i+1, produto[i].nome);
                 }
                 break;
-        
+            
             case 2:
                 getchar();
                 char nome[30];
@@ -104,37 +106,72 @@ int menu(estoque *produto, int n)
                 {
                     printf("produto invalido\n");
                 }
-                break;
+                break;          
             case 3:
-
                 printf("deseja adicionar quantos itens?\n");
                 scanf("%i", &add);
                 getchar();
 
-                produto = realloc(produto, add+n * sizeof(estoque));
+                produto = realloc(produto, (n + add) * sizeof(estoque));
+                if(produto == NULL)
+                {
+                    printf("erro ao alocar memoria\n");
+                }
                 int cont = n;
                 for(int i = n; i < add+n; i++)
                 {
                     printf("qual sera o nome do %iº produto?\n", i+1);
-                    fgets(produto[cont].nome, 30, stdin);
-                    produto[cont].nome[strcspn(produto[cont].nome, "\n")] = '\0';   
+                    fgets(produto[i].nome, 30, stdin);
+                    produto[i].nome[strcspn(produto[i].nome, "\n")] = '\0';   
 
                     printf("qual sera o preço?\n");
-                    scanf("%i", &produto[cont].preço);
+                    scanf("%i", &produto[i].preço);
                     getchar();
 
                     printf("qual sera a quantidade do %iº produto?\n", i+1);
-                    scanf("%i", &produto[cont].quant);
+                    scanf("%i", &produto[i].quant);
                     getchar();
-                
-                    cont++;
                 }
+                n += add;
                 break;
-            case 4:
+           
+            case 5:
                 printf("saindo...\n");
                 return 0;
-        }    
+            
+                
+            case 4:
+                FILE *ptr_ar_txt;
+                FILE *ptr_ar_bin;
+                ptr_ar_bin = fopen("estoque.bin", "wb");
+
+                if(ptr_ar_bin == NULL)
+                {
+                    printf("Erro ao abrir o arquivo\n");
+                }
+                int j;
+                for(j = 0; j < n; j++)
+                {
+                    fwrite(&produto[j], sizeof(estoque), 1, ptr_ar_bin);
+                }
+                
+                ptr_ar_txt = fopen("estoque.txt", "w");
+                if(ptr_ar_txt == NULL)
+                {
+                    printf("Erro ao abrir o arquivo\n");
+                }
+                estoque produto;
+                while(fread(&produto, sizeof(estoque), 1, ptr_ar_bin))
+                {
+                   fprintf(ptr_ar_txt, "NOME: %s | PRECO: %d | QTD: %d\n",
+                   produto.nome, produto.preço, produto.quant);
+                }
+                fclose(ptr_ar_txt);
+                fclose(ptr_ar_bin);
+        }       
+
 
     }while (op != 4);
+    free(produto);
     return 0;
 }
