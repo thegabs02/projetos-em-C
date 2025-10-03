@@ -9,10 +9,9 @@ typedef struct
   int quant;  
 } estoque;
 
-int transaçoes(estoque *produto, int n, int add);
+
 void config_menu(estoque *produto, int n);
 int menu(estoque *produto, int n);
-
 int main (void)
 {
     estoque *produto;
@@ -77,7 +76,7 @@ int menu(estoque *produto, int n)
                 char nome[30];
                 int compra;
                 int encontrado = 0;
-
+                int comp = 0;
                 printf("deseja comprar qual produto?\n");
                 fgets(nome, 30, stdin);
                 nome[strcspn(nome, "\n")] = '\0';
@@ -95,6 +94,25 @@ int menu(estoque *produto, int n)
                         {
                             produto[i].quant -= compra;
                             printf("compra efetuada com sucesso\n");
+                            comp++;
+                            
+
+                            FILE *ptr_comp;
+                            ptr_comp = fopen("transaçoes.log", "a");
+                            if(ptr_comp == NULL)
+                            {
+                                printf("erro ao abrir arquivo");
+                                return 1;
+                            }
+                            for(int o = 0; o < n; o++)
+                            {
+                                if(strcmp(nome, produto[o].nome) == 0)
+                                {
+                                    fprintf(ptr_comp, "foram comprados %i de %s restao %i itens\n", compra, produto[o].nome, produto[o].quant);   
+                                }
+                            }
+                            fclose(ptr_comp);
+
                         }
                         else
                         {
@@ -134,6 +152,19 @@ int menu(estoque *produto, int n)
                     getchar();
                 }
                 n += add;
+                FILE *ptr_trans;
+                ptr_trans = fopen("transaçoes.log", "a");
+                if(ptr_trans == NULL)
+                {
+                    printf("erro ao abrir ao arquivo");
+                    return 1;
+                }
+                int ad = n - add;
+                for(int i = 0; i < add; i++) 
+                {
+                    fprintf(ptr_trans, "ITEMS ADICIONADOS: %s\n", produto[ad].nome);
+                }
+                fclose(ptr_trans);
                 break;
            
             case 5:
@@ -174,12 +205,6 @@ int menu(estoque *produto, int n)
         }       
 
 
-    }while (op != 5);
+    }while (op != 5);   
     free(produto);
-    transaçoes(produto, n, add);
-    return 0;
-}
-int transaçoes(estoque *produto, int n, int add)
-{
-
 }
