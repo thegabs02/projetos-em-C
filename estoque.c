@@ -9,6 +9,7 @@ typedef struct
   int quant;  
 } estoque;
 
+int transaçoes(estoque *produto, int n, int add);
 void config_menu(estoque *produto, int n);
 int menu(estoque *produto, int n);
 
@@ -56,8 +57,8 @@ int menu(estoque *produto, int n)
         printf("1 - listar produtos\n");
         printf("2 - comprar\n");
         printf("3 - adicionar ao estoque\n");
-        printf("4 - sair\n");
-        printf("5 - adicionar ao arquivo\n");
+        printf("4 - adicionar ao arquivo\n");
+        printf("5 - sair\n");
         scanf("%i", &op);
     
         
@@ -143,7 +144,7 @@ int menu(estoque *produto, int n)
             case 4:
                 FILE *ptr_ar_txt;
                 FILE *ptr_ar_bin;
-                ptr_ar_bin = fopen("estoque.bin", "wb");
+                ptr_ar_bin = fopen("estoque.bin", "wb+");
 
                 if(ptr_ar_bin == NULL)
                 {
@@ -154,24 +155,31 @@ int menu(estoque *produto, int n)
                 {
                     fwrite(&produto[j], sizeof(estoque), 1, ptr_ar_bin);
                 }
+                rewind(ptr_ar_bin);
                 
                 ptr_ar_txt = fopen("estoque.txt", "w");
                 if(ptr_ar_txt == NULL)
                 {
                     printf("Erro ao abrir o arquivo\n");
                 }
-                estoque produto;
-                while(fread(&produto, sizeof(estoque), 1, ptr_ar_bin))
+                estoque temp;
+                rewind(ptr_ar_bin);
+                while(fread(&temp, sizeof(estoque), 1, ptr_ar_bin))
                 {
-                   fprintf(ptr_ar_txt, "NOME: %s | PRECO: %d | QTD: %d\n",
-                   produto.nome, produto.preço, produto.quant);
+                   fprintf(ptr_ar_txt, "NOME: %s PRECO: %d QTD: %d\n",
+                   temp.nome, temp.preço, temp.quant);
                 }
                 fclose(ptr_ar_txt);
-                fclose(ptr_ar_bin);
+                fclose(ptr_ar_bin); 
         }       
 
 
-    }while (op != 4);
+    }while (op != 5);
     free(produto);
+    transaçoes(produto, n, add);
     return 0;
+}
+int transaçoes(estoque *produto, int n, int add)
+{
+
 }
